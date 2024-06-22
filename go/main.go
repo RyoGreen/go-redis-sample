@@ -2,8 +2,8 @@ package main
 
 import (
 	"go-redis/config"
-	"go-redis/postgres"
-	"go-redis/redis"
+	"go-redis/infrastructure/postgres"
+	"go-redis/infrastructure/redis"
 
 	"log"
 )
@@ -21,4 +21,5 @@ func main() {
 	}
 	defer postgres.Close()
 	redis.Connect(cfg)
+
 }
