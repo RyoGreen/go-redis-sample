@@ -1,15 +1,24 @@
 package main
 
 import (
-	"io"
-	"net/http"
+	"go-redis/config"
+	"go-redis/postgres"
+	"go-redis/redis"
+
+	"log"
 )
 
 func main() {
-	http.HandleFunc("/", index)
-	http.ListenAndServe(":8080", nil)
-}
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-func index(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Hello, World!")
+	if err := postgres.Connect(cfg); err != nil {
+		log.Println(err)
+		return
+	}
+	defer postgres.Close()
+	redis.Connect(cfg)
 }
