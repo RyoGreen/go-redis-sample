@@ -1,16 +1,19 @@
 package usecase
 
-import "go-redis/repository"
+import (
+	"go-redis/domain"
+	"go-redis/infrastructure/postgres"
+)
 
 type UserUsecase interface {
 }
 
 type UserUsecaseImpl struct {
-	userRepo repository.UserRepository
+	userRepo domain.UserRepository
 }
 
 func NewUserUsecase() UserUsecase {
 	return &UserUsecaseImpl{
-		userRepo: repository.NewUserRepository(),
+		userRepo: postgres.NewUserPostgresRepository(),
 	}
 }
