@@ -2,6 +2,7 @@ package server
 
 import (
 	"go-redis/controller"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -22,10 +23,13 @@ func Run() {
 	m.HandleFunc("/jobs", jobHandler.List).Methods(http.MethodGet)
 	m.HandleFunc("/jobs/{id:[0-9]+}", jobHandler.Get).Methods(http.MethodGet)
 	m.HandleFunc("/jobs", jobHandler.Create).Methods(http.MethodPost)
-	m.HandleFunc("/jobs/{id:[0-9]+}", jobHandler.Update).Methods(http.MethodPut)
+	m.HandleFunc("/jobs", jobHandler.Update).Methods(http.MethodPut)
 	m.HandleFunc("/jobs", jobHandler.Delete).Methods(http.MethodDelete)
 
 	m.HandleFunc("/entries", entryHandler.ListEntries)
 
-	http.ListenAndServe(":8080", m)
+	log.Println("Server is running on port 8080")
+	if err := http.ListenAndServe(":8080", m); err != nil {
+		log.Println(err)
+	}
 }
