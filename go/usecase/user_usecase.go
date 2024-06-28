@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"go-redis/controller/in"
 	"go-redis/controller/out"
 	"go-redis/domain"
@@ -10,9 +11,9 @@ import (
 type UserUsecase interface {
 	List() ([]*out.UserResponse, error)
 	Get(id int) (*out.UserResponse, error)
-	Create(user *in.CreateUserRequest) (*out.UserResponse, error)
-	Update(user *in.UpdateUserRequest) (*out.UserResponse, error)
-	Delete(ids *in.DeleteUserRequest) error
+	Create(ctx context.Context, user *in.CreateUserRequest) (*out.UserResponse, error)
+	Update(ctx context.Context, user *in.UpdateUserRequest) (*out.UserResponse, error)
+	Delete(ctx context.Context, ids *in.DeleteUserRequest) error
 }
 
 type UserUsecaseImpl struct {
@@ -59,9 +60,9 @@ func (u *UserUsecaseImpl) Get(id int) (*out.UserResponse, error) {
 	return userResponse, nil
 }
 
-func (u *UserUsecaseImpl) Create(user *in.CreateUserRequest) (*out.UserResponse, error) {
+func (u *UserUsecaseImpl) Create(ctx context.Context, user *in.CreateUserRequest) (*out.UserResponse, error) {
 	userDomain := domain.NewUser(0, user.Name)
-	userCreated, err := u.userRepo.Create(userDomain)
+	userCreated, err := u.userRepo.Create(ctx, userDomain)
 	if err != nil {
 		return nil, err
 	}
@@ -75,9 +76,9 @@ func (u *UserUsecaseImpl) Create(user *in.CreateUserRequest) (*out.UserResponse,
 	return userResponse, nil
 }
 
-func (u *UserUsecaseImpl) Update(user *in.UpdateUserRequest) (*out.UserResponse, error) {
+func (u *UserUsecaseImpl) Update(ctx context.Context, user *in.UpdateUserRequest) (*out.UserResponse, error) {
 	userDomain := domain.NewUser(user.ID, user.Name)
-	updatedUser, err := u.userRepo.Update(userDomain)
+	updatedUser, err := u.userRepo.Update(ctx, userDomain)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +91,6 @@ func (u *UserUsecaseImpl) Update(user *in.UpdateUserRequest) (*out.UserResponse,
 	return userResponse, nil
 }
 
-func (u *UserUsecaseImpl) Delete(ids *in.DeleteUserRequest) error {
-	return u.userRepo.Delete(ids.ID)
+func (u *UserUsecaseImpl) Delete(ctx context.Context, ids *in.DeleteUserRequest) error {
+	return u.userRepo.Delete(ctx, ids.ID)
 }
