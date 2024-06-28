@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type Job struct {
 	ID          int
@@ -13,9 +16,9 @@ type Job struct {
 type JobRepository interface {
 	FindAll() ([]*Job, error)
 	FindById(id int) (*Job, error)
-	Create(job *Job) (*Job, error)
-	Update(job *Job) (*Job, error)
-	Delete(ids []int) error
+	Create(ctx context.Context, job *Job) (*Job, error)
+	Update(ctx context.Context, job *Job) (*Job, error)
+	Delete(ctx context.Context, ids []int) error
 }
 
 func NewJob(id int, name, description string) *Job {
