@@ -6,6 +6,8 @@ import (
 	"go-redis/usecase"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type jobHandler struct {
@@ -35,7 +37,7 @@ func (h *jobHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *jobHandler) Get(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := mux.Vars(r)["id"]
 	idInt, err := strconv.Atoi(id)
 	job, err := h.jobUsecase.Get(idInt)
 	if err != nil {

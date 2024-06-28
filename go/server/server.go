@@ -21,7 +21,7 @@ func Run() {
 	m.HandleFunc("/users", userHandler.Delete).Methods(http.MethodDelete)
 
 	m.HandleFunc("/jobs", jobHandler.List).Methods(http.MethodGet)
-	m.HandleFunc("/jobs/{id:[0-9]+}", jobHandler.Get).Methods(http.MethodGet)
+	m.HandleFunc("/job/{id:[0-9]+}", jobHandler.Get).Methods(http.MethodGet)
 	m.HandleFunc("/jobs", jobHandler.Create).Methods(http.MethodPost)
 	m.HandleFunc("/jobs", jobHandler.Update).Methods(http.MethodPut)
 	m.HandleFunc("/jobs", jobHandler.Delete).Methods(http.MethodDelete)

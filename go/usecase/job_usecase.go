@@ -4,6 +4,7 @@ import (
 	"go-redis/controller/in"
 	"go-redis/controller/out"
 	"go-redis/domain"
+	"go-redis/infrastructure/postgres"
 )
 
 type JobUsecase interface {
@@ -19,7 +20,9 @@ type JobUsecaseImpl struct {
 }
 
 func NewJobUsecase() JobUsecase {
-	return &JobUsecaseImpl{}
+	return &JobUsecaseImpl{
+		JobRepo: postgres.NewJobPostgresRepository(),
+	}
 }
 
 func (u *JobUsecaseImpl) List() ([]*out.JobResponse, error) {
