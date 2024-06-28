@@ -1,16 +1,14 @@
 package usecase
 
-import "go-redis/repository"
+import "go-redis/domain"
 
 type JobUsecase interface {
 }
 
 type JobUsecaseImpl struct {
-	JobRepo repository.JobRepository
+	JobRepo domain.JobRepository
 }
 
 func NewJobUsecase() JobUsecase {
-	return &JobUsecaseImpl{
-		JobRepo: repository.NewJobRepository(),
-	}
+	return &JobUsecaseImpl{}
 }
