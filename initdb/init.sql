@@ -16,14 +16,6 @@ CREATE TABLE jobs (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE entries (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    job_id INTEGER REFERENCES jobs(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 
 INSERT INTO users (name) VALUES
 ('Alice'),

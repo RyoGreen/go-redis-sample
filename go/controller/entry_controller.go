@@ -15,6 +15,4 @@ func NewEntryController() *entryHandler {
 	}
 }
 
-func (h *entryHandler) ListEntries(w http.ResponseWriter, r *http.Request) {
-
-}
+func (h *entryHandler) ListEntries(w http.ResponseWriter, r *http.Request) {}

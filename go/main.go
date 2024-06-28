@@ -4,6 +4,7 @@ import (
 	"go-redis/config"
 	"go-redis/infrastructure/postgres"
 	"go-redis/infrastructure/redis"
+	"go-redis/server"
 
 	"log"
 )
@@ -22,4 +23,5 @@ func main() {
 	defer postgres.Close()
 	redis.Connect(cfg)
 
+	server.Run()
 }

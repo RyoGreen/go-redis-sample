@@ -1,18 +1,16 @@
 package usecase
 
 import (
-	"go-redis/repository"
+	"go-redis/domain"
 )
 
 type EntryUsecase interface {
 }
 
 type EntryUsecaseImpl struct {
-	EntryRepo repository.EntryRepository
+	EntryRepo domain.EntryCache
 }
 
 func NewEntryUsecase() EntryUsecase {
-	return &EntryUsecaseImpl{
-		EntryRepo: repository.NewEntryRepository(),
-	}
+	return &EntryUsecaseImpl{}
 }
