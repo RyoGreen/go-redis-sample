@@ -15,4 +15,8 @@ func NewJobController() *jobHandler {
 	}
 }
 
-func (h *jobHandler) List(w http.ResponseWriter, r *http.Request) {}
+func (h *jobHandler) List(w http.ResponseWriter, r *http.Request)   {}
+func (h *jobHandler) Get(w http.ResponseWriter, r *http.Request)    {}
+func (h *jobHandler) Create(w http.ResponseWriter, r *http.Request) {}
+func (h *jobHandler) Update(w http.ResponseWriter, r *http.Request) {}
+func (h *jobHandler) Delete(w http.ResponseWriter, r *http.Request) {}
