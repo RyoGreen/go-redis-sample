@@ -77,19 +77,15 @@ func (u *UserUsecaseImpl) Create(user *in.CreateUserRequest) (*out.UserResponse,
 
 func (u *UserUsecaseImpl) Update(user *in.UpdateUserRequest) (*out.UserResponse, error) {
 	userDomain := domain.NewUser(user.ID, user.Name)
-	err := u.userRepo.Update(userDomain)
-	if err != nil {
-		return nil, err
-	}
-	getUser, err := u.userRepo.FindById(user.ID)
+	updatedUser, err := u.userRepo.Update(userDomain)
 	if err != nil {
 		return nil, err
 	}
 	var userResponse = &out.UserResponse{
-		ID:        getUser.ID,
-		Name:      getUser.Name,
-		CreatedAt: getUser.CreatedAt,
-		UpdateAt:  getUser.UpdatedAt,
+		ID:        updatedUser.ID,
+		Name:      updatedUser.Name,
+		CreatedAt: updatedUser.CreatedAt,
+		UpdateAt:  updatedUser.UpdatedAt,
 	}
 	return userResponse, nil
 }

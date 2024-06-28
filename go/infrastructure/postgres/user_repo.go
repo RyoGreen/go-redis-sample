@@ -54,14 +54,18 @@ func (r *UserRepositoryImpl) Create(user *domain.User) (*domain.User, error) {
 	return user, nil
 }
 
-func (r *UserRepositoryImpl) Update(user *domain.User) error {
-	sql := "UPDATE users SET name = $1, updated_at = $2 WHERE id = $3 RETURNING id,name,created_at,updated_at"
+func (r *UserRepositoryImpl) Update(user *domain.User) (*domain.User, error) {
+	sql := "UPDATE users SET name = $1, updated_at = $2 WHERE id = $3 RETURNING id, name, created_at, updated_at"
 	now := time.Now()
-	_, err := db.Exec(sql, user.Name, now, user.ID)
+
+	row := db.QueryRow(sql, user.Name, now, user.ID)
+	updatedUser := &domain.User{}
+	err := row.Scan(&updatedUser.ID, &updatedUser.Name, &updatedUser.CreatedAt, &updatedUser.UpdatedAt)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	return updatedUser, nil
 }
 
 func (r *UserRepositoryImpl) Delete(id []int) error {
