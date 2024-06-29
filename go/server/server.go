@@ -13,6 +13,7 @@ func Run() {
 	entryHandler := controller.NewEntryController()
 	userHandler := controller.NewUserController()
 	jobHandler := controller.NewJobController()
+	rankingHandler := controller.NewRankingController()
 
 	m.HandleFunc("/users", userHandler.List).Methods(http.MethodGet)
 	m.HandleFunc("/user/{id:[0-9]+}", userHandler.Get).Methods(http.MethodGet)
@@ -31,6 +32,9 @@ func Run() {
 	m.HandleFunc("/entry", entryHandler.Create).Methods(http.MethodPost)
 	m.HandleFunc("/entry", entryHandler.Update).Methods(http.MethodPut)
 	m.HandleFunc("/entry", entryHandler.Delete).Methods(http.MethodDelete)
+
+	m.HandleFunc("/rankings", rankingHandler.List).Methods(http.MethodGet)
+	m.HandleFunc("/ranking", rankingHandler.Update).Methods(http.MethodPut)
 
 	log.Println("Server is running on port 8080")
 	if err := http.ListenAndServe(":8080", m); err != nil {

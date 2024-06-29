@@ -21,12 +21,6 @@ func NewEntry(id, userID, jobID int) *Entry {
 	}
 }
 
-type EntryCache interface {
-	GetAll(ctx context.Context) ([]*Entry, error)
-	GetByID(ctx context.Context, id int) (*Entry, error)
-	Update(ctx context.Context) error
-}
-
 type EntryRepository interface {
 	FindAll() ([]*Entry, error)
 	Find(id int) (*Entry, error)

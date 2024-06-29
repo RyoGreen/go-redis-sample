@@ -5,21 +5,17 @@ import (
 	"go-redis/domain"
 )
 
-func NewRedisRepository() domain.EntryCache {
+func NewRedisRepository() domain.RankingRepository {
 	return &RedisRepository{}
 }
 
 type RedisRepository struct {
 }
 
-func (r *RedisRepository) GetAll(ctx context.Context) ([]*domain.Entry, error) {
-	return []*domain.Entry{}, nil
-}
-
-func (r *RedisRepository) GetByID(ctx context.Context, id int) (*domain.Entry, error) {
-	return &domain.Entry{}, nil
-}
-
 func (r *RedisRepository) Update(ctx context.Context) error {
 	return nil
+}
+
+func (r *RedisRepository) List(ctx context.Context) ([]*domain.Ranking, error) {
+	return nil, nil
 }
