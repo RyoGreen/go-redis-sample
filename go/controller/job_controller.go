@@ -54,13 +54,14 @@ func (h *jobHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *jobHandler) Create(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	req := &in.JobCreateRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	job, err := h.jobUsecase.Create(req)
+	job, err := h.jobUsecase.Create(ctx, req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -75,13 +76,14 @@ func (h *jobHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *jobHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	req := &in.JobUpdateRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	job, err := h.jobUsecase.Update(req)
+	job, err := h.jobUsecase.Update(ctx, req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -96,13 +98,14 @@ func (h *jobHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *jobHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	req := &in.JobDeleteRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = h.jobUsecase.Delete(req)
+	err = h.jobUsecase.Delete(ctx, req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"go-redis/controller/in"
 	"go-redis/controller/out"
 	"go-redis/domain"
@@ -10,9 +11,9 @@ import (
 type JobUsecase interface {
 	List() ([]*out.JobResponse, error)
 	Get(id int) (*out.JobResponse, error)
-	Create(job *in.JobCreateRequest) (*out.JobResponse, error)
-	Update(job *in.JobUpdateRequest) (*out.JobResponse, error)
-	Delete(ids *in.JobDeleteRequest) error
+	Create(ctx context.Context, job *in.JobCreateRequest) (*out.JobResponse, error)
+	Update(ctx context.Context, job *in.JobUpdateRequest) (*out.JobResponse, error)
+	Delete(ctx context.Context, ids *in.JobDeleteRequest) error
 }
 
 type JobUsecaseImpl struct {
@@ -57,9 +58,9 @@ func (u *JobUsecaseImpl) Get(id int) (*out.JobResponse, error) {
 	}, nil
 }
 
-func (u *JobUsecaseImpl) Create(job *in.JobCreateRequest) (*out.JobResponse, error) {
+func (u *JobUsecaseImpl) Create(ctx context.Context, job *in.JobCreateRequest) (*out.JobResponse, error) {
 	j := domain.NewJob(0, job.Name, job.Description)
-	createdJob, err := u.JobRepo.Create(j)
+	createdJob, err := u.JobRepo.Create(ctx, j)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +73,9 @@ func (u *JobUsecaseImpl) Create(job *in.JobCreateRequest) (*out.JobResponse, err
 	}, nil
 }
 
-func (u *JobUsecaseImpl) Update(job *in.JobUpdateRequest) (*out.JobResponse, error) {
+func (u *JobUsecaseImpl) Update(ctx context.Context, job *in.JobUpdateRequest) (*out.JobResponse, error) {
 	j := domain.NewJob(job.ID, job.Name, job.Description)
-	updatedJob, err := u.JobRepo.Update(j)
+	updatedJob, err := u.JobRepo.Update(ctx, j)
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +88,8 @@ func (u *JobUsecaseImpl) Update(job *in.JobUpdateRequest) (*out.JobResponse, err
 	}, nil
 }
 
-func (u *JobUsecaseImpl) Delete(ids *in.JobDeleteRequest) error {
-	err := u.JobRepo.Delete(ids.ID)
+func (u *JobUsecaseImpl) Delete(ctx context.Context, ids *in.JobDeleteRequest) error {
+	err := u.JobRepo.Delete(ctx, ids.ID)
 	if err != nil {
 		return err
 	}

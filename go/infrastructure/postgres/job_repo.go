@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"go-redis/domain"
 	"time"
 )
@@ -21,7 +22,7 @@ func (r *JobRepositoryImpl) FindAll() ([]*domain.Job, error) {
 	var jobs []*domain.Job
 	for rows.Next() {
 		job := domain.Job{}
-		err := rows.Scan(&job.ID, &job.Name, &job.Description, &job.CreatedAt, &job.UpdatedAt)
+		err = rows.Scan(&job.ID, &job.Name, &job.Description, &job.CreatedAt, &job.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -43,10 +44,26 @@ func (r *JobRepositoryImpl) FindById(id int) (*domain.Job, error) {
 	return job, nil
 }
 
-func (r *JobRepositoryImpl) Create(job *domain.Job) (*domain.Job, error) {
+func (r *JobRepositoryImpl) Create(ctx context.Context, job *domain.Job) (*domain.Job, error) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit()
+		}
+	}()
+
 	sql := `INSERT INTO jobs (name, description,created_at,updated_at) VALUES ($1, $2, $3, $4) RETURNING id, created_at, updated_at`
+
 	now := time.Now()
-	err := db.QueryRow(sql, job.Name, job.Description, now, now).Scan(&job.ID, &job.CreatedAt, &job.UpdatedAt)
+	err = db.QueryRow(sql, job.Name, job.Description, now, now).Scan(&job.ID, &job.CreatedAt, &job.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +71,25 @@ func (r *JobRepositoryImpl) Create(job *domain.Job) (*domain.Job, error) {
 	return &domain.Job{}, nil
 }
 
-func (r *JobRepositoryImpl) Update(job *domain.Job) (*domain.Job, error) {
+func (r *JobRepositoryImpl) Update(ctx context.Context, job *domain.Job) (*domain.Job, error) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit()
+		}
+	}()
+
 	sql := `UPDATE jobs SET name=$1, description=$2, updated_at=$3 WHERE id=$4 RETURNING name,description,updated_at`
 	now := time.Now()
-	err := db.QueryRow(sql, job.Name, job.Description, now, job.ID).Scan(&job.Name, &job.Description, &job.UpdatedAt)
+	err = db.QueryRow(sql, job.Name, job.Description, now, job.ID).Scan(&job.Name, &job.Description, &job.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -65,9 +97,24 @@ func (r *JobRepositoryImpl) Update(job *domain.Job) (*domain.Job, error) {
 	return &domain.Job{}, nil
 }
 
-func (r *JobRepositoryImpl) Delete(ids []int) error {
+func (r *JobRepositoryImpl) Delete(ctx context.Context, ids []int) error {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit()
+		}
+	}()
+
 	sql := `DELETE FROM jobs WHERE id = ANY($1)`
-	_, err := db.Exec(sql, ids)
+	_, err = db.Exec(sql, ids)
 	if err != nil {
 		return err
 	}

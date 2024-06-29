@@ -57,6 +57,7 @@ func (h *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *userHandler) Create(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var req *in.CreateUserRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
@@ -64,7 +65,7 @@ func (h *userHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdUser, err := h.userUsecase.Create(req)
+	createdUser, err := h.userUsecase.Create(ctx, req)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -79,13 +80,14 @@ func (h *userHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *userHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var req *in.UpdateUserRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	updatedUser, err := h.userUsecase.Update(req)
+	updatedUser, err := h.userUsecase.Update(ctx, req)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -100,13 +102,14 @@ func (h *userHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *userHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var req *in.DeleteUserRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	err = h.userUsecase.Delete(req)
+	err = h.userUsecase.Delete(ctx, req)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
