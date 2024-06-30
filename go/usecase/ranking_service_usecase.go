@@ -15,6 +15,7 @@ type RankingService interface {
 
 type RankingServiceImpl struct {
 	RankingRepo domain.RankingRepository
+	EntryRepo   domain.EntryRepository
 	UserRepo    domain.UserRepository
 	JobRepo     domain.JobRepository
 }
@@ -22,6 +23,7 @@ type RankingServiceImpl struct {
 func NewRankingService() RankingService {
 	return &RankingServiceImpl{
 		RankingRepo: redis.NewRedisRepository(),
+		EntryRepo:   postgres.NewEntryPostgresRepository(),
 		UserRepo:    postgres.NewUserPostgresRepository(),
 		JobRepo:     postgres.NewJobPostgresRepository(),
 	}
