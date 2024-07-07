@@ -6,6 +6,8 @@ import (
 	"go-redis/domain"
 	"go-redis/infrastructure/postgres"
 	"go-redis/infrastructure/redis"
+	"sort"
+	"time"
 )
 
 type RankingService interface {
@@ -16,20 +18,54 @@ type RankingService interface {
 type RankingServiceImpl struct {
 	RankingRepo domain.RankingRepository
 	EntryRepo   domain.EntryRepository
-	UserRepo    domain.UserRepository
-	JobRepo     domain.JobRepository
 }
 
 func NewRankingService() RankingService {
 	return &RankingServiceImpl{
 		RankingRepo: redis.NewRedisRepository(),
 		EntryRepo:   postgres.NewEntryPostgresRepository(),
-		UserRepo:    postgres.NewUserPostgresRepository(),
-		JobRepo:     postgres.NewJobPostgresRepository(),
 	}
 }
 
+const rankingMax = 3
+
 func (u *RankingServiceImpl) Update(ctx context.Context) error {
+	entries, err := u.EntryRepo.FindAll()
+	if err != nil {
+		return err
+	}
+	r := make(map[int]int)
+	for _, entry := range entries {
+		r[entry.JobID]++
+	}
+
+	type kv struct {
+		Key   int
+		Value int
+	}
+	var sortedData []kv
+	for k, v := range r {
+		sortedData = append(sortedData, kv{k, v})
+	}
+
+	sort.Slice(sortedData, func(i, j int) bool {
+		return sortedData[i].Value > sortedData[j].Value
+	})
+
+	now := time.Now()
+	var rankings []*domain.Ranking
+	for i := 0; i < rankingMax; i++ {
+		rank := i + 1
+		jobID := sortedData[i].Key
+		ranking := domain.NewRanking(rank, jobID, sortedData[i].Value, now)
+		rankings = append(rankings, ranking)
+	}
+
+	err = u.RankingRepo.Update(ctx, rankings)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -41,9 +77,10 @@ func (u *RankingServiceImpl) List(ctx context.Context) ([]*out.RankingResponse, 
 	var rankingResponses []*out.RankingResponse
 	for _, ranking := range rankings {
 		var ranking = &out.RankingResponse{
-			ID:    ranking.ID,
-			Rank:  ranking.Rank,
-			JobID: ranking.JobID,
+			Rank:            ranking.Rank,
+			JobID:           ranking.JobID,
+			ApplicantsCount: ranking.ApplicantsCount,
+			UpdatedAt:       ranking.UpdatedAt,
 		}
 		rankingResponses = append(rankingResponses, ranking)
 	}
