@@ -1,0 +1,14 @@
+{
+    "database": {
+        "password": "",
+        "host": "",
+        "user": "",
+        "dbname": "",
+        "port": 0
+    },
+    "redis": {
+        "address": "",
+        "password": "",
+        "db": 0
+    }
+}
