@@ -25,9 +25,10 @@ type redisRanking struct {
 const RankingKey = "ranking"
 
 func (r *RedisRepository) Update(ctx context.Context, rankings []*domain.Ranking) error {
-	cmd := client.Del(ctx, RankingKey)
-	if cmd.Err() != nil {
-		return fmt.Errorf("failed to update ranking: %w", cmd.Err())
+	pipe := client.TxPipeline()
+	delCmd := pipe.Del(ctx, RankingKey)
+	if delCmd.Err() != nil {
+		return fmt.Errorf("failed to update ranking: %w", delCmd.Err())
 	}
 	var rdsRankings = make([]redisRanking, 0, len(rankings))
 	for _, v := range rankings {
@@ -48,9 +49,13 @@ func (r *RedisRepository) Update(ctx context.Context, rankings []*domain.Ranking
 		data = append(data, string(dataJson))
 
 	}
-	cmd = client.SAdd(ctx, RankingKey, data...)
-	if cmd.Err() != nil {
-		return fmt.Errorf("failed to update ranking: %w", cmd.Err())
+	saddCmd := pipe.SAdd(ctx, RankingKey, data...)
+	if saddCmd.Err() != nil {
+		return fmt.Errorf("failed to update ranking: %w", saddCmd.Err())
+	}
+
+	if _, err := pipe.Exec(ctx); err != nil {
+		return fmt.Errorf("failed to update ranking: %w", err)
 	}
 
 	return nil
